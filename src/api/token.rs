@@ -30,7 +30,11 @@ impl crate::FireAuth {
         Ok(body)
     }
 
-    pub async fn verify_id_token(&self, id_token: &str) -> Result<IdTokenClaims, Error> {
+    pub async fn verify_id_token(
+        &self,
+        id_token: &str,
+        project_id: &str,
+    ) -> Result<IdTokenClaims, Error> {
         // Gets the kid property of the token header
         let kid = decode_header(id_token)
             .map_err(|_| Error::Token("Malformed token header!".into()))?
@@ -63,15 +67,23 @@ impl crate::FireAuth {
             decode::<IdTokenClaims>(id_token, decoding_key, &Validation::new(Algorithm::RS256))
                 .map_err(|_| Error::Token("Invalid ID token!".into()))?
                 .claims;
-        let timestamp = jsonwebtoken::get_current_timestamp();
 
+        // Checks for valid project and issuer
+        if decoded.aud != project_id {
+            return Err(Error::Token(format!("Invalid project ID: {}", decoded.aud)));
+        }
+        if decoded.iss != format!("https://securetoken.google.com/{}", project_id) {
+            return Err(Error::Token(format!("Invalid issuer: {}", decoded.iss)));
+        }
+
+        let timestamp = jsonwebtoken::get_current_timestamp();
         // Checks if the token is expired
         if decoded.exp <= timestamp {
             return Err(Error::Token("Token is expired!".into()));
         }
 
         // Checks if the token is valid yet
-        if decoded.iat >= timestamp {
+        if decoded.iat > timestamp {
             return Err(Error::Token("Token isn't valid yet!".into()));
         }
 
@@ -104,4 +116,5 @@ pub struct IdTokenClaims {
     pub iss: String,
     pub sub: String,
     pub auth_time: u64,
+    pub aud: String,
 }

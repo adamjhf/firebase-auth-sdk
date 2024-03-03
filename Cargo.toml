@@ -1,13 +1,13 @@
 [package]
-name = "firebase-auth-sdk"
-version = "0.1.0"
+name = "firebase-auth"
+version = "0.1.6"
 authors = ["Federico Fusco", "khant <contact@khant.dev>"]
 edition = "2021"
 description = "Firebase authentication SDK for rust."
 license-file = "LICENSE"
-homepage = "https://github.com/federicofusco/firebase-auth-sdk"
-documentation = "https://github.com/federicofusco/firebase-auth-sdk"
-repository = "https://github.com/federicofusco/firebase-auth-sdk"
+homepage = "https://github.com/adamjhf/firebase-auth-sdk"
+documentation = "https://github.com/adamjhf/firebase-auth-sdk"
+repository = "https://github.com/adamjhf/firebase-auth-sdk"
 readme = "README.md"
 keywords = ["jwt", "firebase", "authentication"]
 categories = ["authentication"]
