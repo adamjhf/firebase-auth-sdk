@@ -1,6 +1,9 @@
 use super::FailResponse;
 use crate::error::Error;
+use http_cache_reqwest::{CACacheManager, Cache, CacheMode, HttpCache, HttpCacheOptions};
 use jsonwebtoken::{decode, decode_header, Algorithm, DecodingKey, Validation};
+use reqwest::Client;
+use reqwest_middleware::ClientBuilder;
 use serde::{Deserialize, Serialize};
 
 impl crate::FireAuth {
@@ -52,8 +55,14 @@ impl crate::FireAuth {
             .ok_or(Error::Token("Missing kid in token header!".into()))?;
 
         // Fetches the possible decoding keys
-        let url = String::from ( "https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com" );
-        let client = reqwest::Client::new();
+        let url = String::from("https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com");
+        let client = ClientBuilder::new(Client::new())
+            .with(Cache(HttpCache {
+                mode: CacheMode::Default,
+                manager: CACacheManager::default(),
+                options: HttpCacheOptions::default(),
+            }))
+            .build();
         let resp = client.get(url).send().await?;
 
         if resp.status() != 200 {
