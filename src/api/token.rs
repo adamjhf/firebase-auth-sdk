@@ -35,6 +35,16 @@ impl crate::FireAuth {
         id_token: &str,
         project_id: &str,
     ) -> Result<IdTokenClaims, Error> {
+        self.verify_id_token_with_leeway(id_token, project_id, 0)
+            .await
+    }
+
+    pub async fn verify_id_token_with_leeway(
+        &self,
+        id_token: &str,
+        project_id: &str,
+        leeway: u64,
+    ) -> Result<IdTokenClaims, Error> {
         // Gets the kid property of the token header
         let kid = decode_header(id_token)
             .map_err(|_| Error::Token("Malformed token header!".into()))?
@@ -78,12 +88,12 @@ impl crate::FireAuth {
 
         let timestamp = jsonwebtoken::get_current_timestamp();
         // Checks if the token is expired
-        if decoded.exp <= timestamp {
+        if decoded.exp <= timestamp - leeway {
             return Err(Error::Token("Token is expired!".into()));
         }
 
         // Checks if the token is valid yet
-        if decoded.iat > timestamp {
+        if decoded.iat > timestamp + leeway {
             return Err(Error::Token("Token isn't valid yet!".into()));
         }
 
