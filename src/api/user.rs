@@ -144,7 +144,7 @@ pub struct User {
     pub email: String,
     pub password_hash: Option<String>,
     pub email_verified: bool,
-    pub password_updated_at: u64,
+    pub password_updated_at: Option<u64>,
     pub provider_user_info: Vec<ProviderUserInfo>,
     pub valid_since: String,
     pub last_login_at: String,
