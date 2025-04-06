@@ -18,8 +18,14 @@ pub enum Error {
     Token(String),
 }
 
-impl std::convert::From<reqwest::Error> for Error {
-    fn from(err: reqwest::Error) -> Self {
+impl std::convert::From<reqwest_middleware::reqwest::Error> for Error {
+    fn from(err: reqwest_middleware::reqwest::Error) -> Self {
+        Error::API(err.to_string())
+    }
+}
+
+impl std::convert::From<reqwest_middleware::Error> for Error {
+    fn from(err: reqwest_middleware::Error) -> Self {
         Error::API(err.to_string())
     }
 }
