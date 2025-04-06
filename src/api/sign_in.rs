@@ -14,8 +14,8 @@ impl crate::FireAuth {
             self.api_key,
         );
 
-        let client = reqwest::Client::new();
-        let resp = client
+        let resp = self
+            .client
             .post(&url)
             .header("Content-Type", "application/json")
             .json(&SignInPayload {

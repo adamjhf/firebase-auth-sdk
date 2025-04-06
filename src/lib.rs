@@ -1,16 +1,18 @@
 pub mod api;
 mod error;
 
+use reqwest::Client;
+
 pub use error::Error;
 
 #[derive(Clone, Debug)]
 pub struct FireAuth {
-    pub api_key: String, // web api key
+    pub api_key: String,
+    pub client: Client,
 }
 
 impl FireAuth {
-    /// A constructor for the FireAuth struct
-    pub fn new(api_key: String) -> Self {
-        Self { api_key }
+    pub fn new(api_key: String, client: Client) -> Self {
+        Self { api_key, client }
     }
 }

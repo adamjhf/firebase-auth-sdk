@@ -1,9 +1,6 @@
 use super::FailResponse;
 use crate::error::Error;
-use http_cache_reqwest::{CACacheManager, Cache, CacheMode, HttpCache, HttpCacheOptions};
 use jsonwebtoken::{decode, decode_header, Algorithm, DecodingKey, Validation};
-use reqwest::Client;
-use reqwest_middleware::ClientBuilder;
 use serde::{Deserialize, Serialize};
 
 impl crate::FireAuth {
@@ -13,8 +10,8 @@ impl crate::FireAuth {
             self.api_key,
         );
 
-        let client = reqwest::Client::new();
-        let resp = client
+        let resp = self
+            .client
             .post(url)
             .header("Content-Type", "application/json")
             .json(&RefreshIdTokenPayload {
@@ -56,14 +53,7 @@ impl crate::FireAuth {
 
         // Fetches the possible decoding keys
         let url = String::from("https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com");
-        let client = ClientBuilder::new(Client::new())
-            .with(Cache(HttpCache {
-                mode: CacheMode::Default,
-                manager: CACacheManager::default(),
-                options: HttpCacheOptions::default(),
-            }))
-            .build();
-        let resp = client.get(url).send().await?;
+        let resp = self.client.get(url).send().await?;
 
         if resp.status() != 200 {
             // Cannot guarantee an error message from the response
