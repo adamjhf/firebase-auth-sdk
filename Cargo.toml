@@ -1,7 +1,7 @@
 [package]
 name = "firebase-auth"
-version = "0.1.6"
-authors = ["Federico Fusco", "khant <contact@khant.dev>"]
+version = "0.2.0"
+authors = ["Federico Fusco", "khant <contact@khant.dev>", "adamjhf"]
 edition = "2021"
 description = "Firebase authentication SDK for rust."
 license-file = "LICENSE"
