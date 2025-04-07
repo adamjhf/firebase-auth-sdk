@@ -1,9 +1,15 @@
 use thiserror::Error;
 
-#[derive(Error, Debug, Clone)]
+#[derive(Error, Debug)]
 pub enum Error {
     #[error("{0}")]
     API(String),
+
+    #[error("{0}")]
+    NetworkMiddleware(#[from] reqwest_middleware::Error),
+
+    #[error("{0}")]
+    Network(#[from] reqwest_middleware::reqwest::Error),
 
     #[error("{0}")]
     SignUp(String),
@@ -16,16 +22,4 @@ pub enum Error {
 
     #[error("{0}")]
     Token(String),
-}
-
-impl std::convert::From<reqwest_middleware::reqwest::Error> for Error {
-    fn from(err: reqwest_middleware::reqwest::Error) -> Self {
-        Error::API(err.to_string())
-    }
-}
-
-impl std::convert::From<reqwest_middleware::Error> for Error {
-    fn from(err: reqwest_middleware::Error) -> Self {
-        Error::API(err.to_string())
-    }
 }
